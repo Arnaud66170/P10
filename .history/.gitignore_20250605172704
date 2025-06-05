@@ -1,0 +1,32 @@
+# === PYTHON STANDARD ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# === VENV ===
+venv_p10/
+
+# === IDEs ===
+.vscode/
+*.swp
+
+# === NOTEBOOKS ===
+*.ipynb_checkpoints/
+
+# === DATA (on ignore seulement le volume inutile) ===
+data/clicks/  # Trop volumineux, inutile de versionner 385 fichiers horaires
+data/**/*.parquet
+data/**/*.pkl
+data/**/*.npz
+data/**/intermediate_*
+data/**/temp_*
+
+# Garder ces fichiers essentiels :
+!data/articles_metadata.csv
+!data/clicks_sample.csv
+
+# === MODELS & OUTPUTS ===
+models/
+outputs/
+
