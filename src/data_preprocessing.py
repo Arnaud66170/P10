@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from typing import Tuple
+from sklearn.decomposition import PCA
 
 
 def load_metadata(metadata_path: str) -> pd.DataFrame:
@@ -33,6 +34,23 @@ def load_embeddings_pickle(embeddings_path: str) -> np.ndarray:
     with open(embeddings_path, "rb") as f:
         embeddings = pickle.load(f)
     return embeddings
+
+
+def reduce_embeddings(embeddings_array: np.ndarray, n_components: int = 100) -> np.ndarray:
+    """
+    Réduit la dimension de la matrice d'embeddings via PCA.
+
+    Args:
+        embeddings_array (np.ndarray): matrice (nb_articles, dim_initiale)
+        n_components (int): nombre de composantes principales à conserver
+
+    Returns:
+        np.ndarray: matrice réduite (nb_articles, n_components)
+    """
+    pca = PCA(n_components=n_components)
+    # fit_transform sur l'ensemble des embeddings
+    reduced = pca.fit_transform(embeddings_array)
+    return reduced
 
 
 def attach_embeddings(df_articles: pd.DataFrame, embeddings_array: np.ndarray) -> pd.DataFrame:

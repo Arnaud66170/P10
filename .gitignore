@@ -32,3 +32,8 @@ data/articles_embeddings_compressed.npz
 # === MODELS & OUTPUTS ===
 models/
 outputs/
+# === HISTORIQUE VSCODE / AUTRES ===
+.history/
+
+# Supprimer les fichiers déjà indexés (mais sans les effacer du disque)
+# git rm -r --cached data/clicks/
