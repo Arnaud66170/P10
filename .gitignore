@@ -23,7 +23,8 @@ data/**/*.npz                          # fichiers compressés numpy
 data/articles_embeddings.pickle       # 355 Mo, inutile à versionner
 data/**/intermediate_*
 data/**/temp_*
-
+# Ignorer tous les fichiers clicks_hour_*.csv (mais garder la structure)
+data/clicks/clicks_hour_*.csv
 # On garde les fichiers sources légers
 !data/articles_metadata.csv
 !data/clicks_sample.csv
