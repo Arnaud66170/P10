@@ -1,0 +1,6 @@
+# streamlit_app/.gitignore
+
+.streamlit/
+__pycache__/
+*.pyc
+*.pkl

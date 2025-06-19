@@ -10,15 +10,14 @@ from sklearn.decomposition import PCA
 
 def load_metadata(metadata_path: str) -> pd.DataFrame:
     """
-    Charge les métadonnées des articles depuis un fichier CSV.
-
-    Args:
-        metadata_path (str): Chemin vers le fichier articles_metadata.csv
-
-    Returns:
-        pd.DataFrame: Table des métadonnées articles
+    Charge les métadonnées des articles, que ce soit au format CSV ou Parquet.
     """
-    return pd.read_csv(metadata_path)
+    if metadata_path.endswith(".csv"):
+        return pd.read_csv(metadata_path)
+    elif metadata_path.endswith(".parquet"):
+        return pd.read_parquet(metadata_path)
+    else:
+        raise ValueError(f"Format non supporté : {metadata_path}")
 
 
 def load_embeddings_pickle(embeddings_path: str) -> np.ndarray:
