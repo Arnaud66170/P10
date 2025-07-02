@@ -1,0 +1,44 @@
+# === PYTHON STANDARD ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# === ENVIRONNEMENT VIRTUEL ===
+venv_p10/
+
+.env.dev
+.env.prod
+scripts/.env
+
+# === IDEs / ÉDITEURS ===
+.vscode/
+*.swp
+
+# === JUPYTER NOTEBOOKS ===
+*.ipynb_checkpoints/
+
+# === DATA ===
+# Trop volumineux ou artefacts non utiles à la version
+data/clicks/                           # 210 Mo, fichiers horaires
+data/**/*.parquet                      # fichiers compressés générés
+data/**/*.pkl                          # fichiers pickle
+data/**/*.npz                          # fichiers compressés numpy
+data/articles_embeddings.pickle       # 355 Mo, inutile à versionner
+data/**/intermediate_*
+data/**/temp_*
+# Ignorer tous les fichiers clicks_hour_*.csv (mais garder la structure)
+data/clicks/clicks_hour_*.csv
+# On garde les fichiers sources légers
+!data/articles_metadata.csv
+!data/clicks_sample.csv
+data/articles_embeddings.pickle
+data/articles_embeddings_compressed.npz
+# === MODELS & OUTPUTS ===
+models/
+outputs/
+# === HISTORIQUE VSCODE / AUTRES ===
+.history/
+
+# Supprimer les fichiers déjà indexés (mais sans les effacer du disque)
+# git rm -r --cached data/clicks/
