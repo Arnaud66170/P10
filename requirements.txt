@@ -1,60 +1,29 @@
-<<<<<<< HEAD
-# Core
-pandas==2.2.2
-numpy==1.26.4
-scikit-learn==1.4.2
-# scikit-surprise==1.1.3 installé manuellement depuis source locale
-
-
-# Visualisation (pour EDA uniquement)
-matplotlib==3.8.4
-networkx==3.4.2
-
-# Progression & utilitaires
-tqdm==4.66.4
-joblib==1.4.2
-
-# App Streamlit
-streamlit==1.35.0
-
-# FastAPI + serveur
-fastapi==0.111.0
-uvicorn==0.30.0
-
-# Azure Function Tools
-azure-functions==1.16.0
-azure-storage-blob>=12.19.0
-echo azure-functions >> requirements.txt
-
-
-# Serialization & compression
-scipy==1.13.1
-
-# Pour les tests automatisés
-pytest
-=======
-# Requirements pour Streamlit Cloud - P10 Recommendation App
-
-# Core Streamlit
-streamlit==1.35.0
-
-# Data processing
-pandas==2.2.2
-numpy==1.26.4
-
-# HTTP requests pour Azure Function
-requests==2.32.3
-
-# Azure Blob Storage (pour charger user_ids_valid.json)
-azure-storage-blob==12.25.1
 azure-core==1.34.0
-
-# Environment variables
-python-dotenv==1.1.0
-
-# Date/time handling
+azure-functions==1.23.0
+azure-storage-blob==12.25.1
+certifi==2025.6.15
+cffi==1.17.1
+charset-normalizer==3.4.2
+cryptography==45.0.4
+Cython==3.1.2
+idna==3.10
+isodate==0.7.2
+joblib==1.5.1
+MarkupSafe==3.0.2
+numpy==1.26.4
+pandas==2.3.0
+pyarrow==15.0.2
+pycparser==2.22
 python-dateutil==2.9.0.post0
-
-# JSON processing (built-in, mais parfois requis explicitement)
-# (rien à ajouter, json est built-in Python)
->>>>>>> a37ab9cb781b54b4dce929b609a7230d0e36a1f5
+python-dotenv==1.1.1
+pytz==2025.2
+requests==2.32.4
+scikit-learn==1.7.0
+scikit-surprise==1.1.4
+scipy==1.15.3
+six==1.17.0
+threadpoolctl==3.6.0
+typing_extensions==4.14.0
+tzdata==2025.2
+urllib3==2.5.0
+Werkzeug==3.1.3
