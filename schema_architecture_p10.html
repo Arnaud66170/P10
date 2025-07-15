@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Système de Recommandation P10</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .update-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .architecture-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab.active:hover {
+            background: #0056b3;
+        }
+        
+        .diagram-container {
+            padding: 30px;
+            min-height: 600px;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .architecture-layer {
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .layer-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: linear-gradient(90deg, #ecf0f1, transparent);
+            border-left: 4px solid #3498db;
+        }
+        
+        .components-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .component {
+            background: white;
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .component.azure {
+            border-color: #007bff;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        }
+        
+        .component.data {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+        }
+        
+        .component.ml {
+            border-color: #fd7e14;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+        }
+        
+        .component.interface {
+            border-color: #6f42c1;
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+        }
+        
+        .component.tests {
+            border-color: #17a2b8;
+            background: linear-gradient(135deg, #e0f7ff, #b3ecf5);
+        }
+        
+        .component.production {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        }
+        
+        .component-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .component-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: #28a745;
+        }
+        
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #34495e;
+            margin: 10px auto;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        .arrow-horizontal {
+            width: 50px;
+            height: 3px;
+            background: #34495e;
+            position: relative;
+            margin: 0 20px;
+        }
+        
+        .arrow-horizontal::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -8px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid #34495e;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+        
+        .info-panel {
+            position: fixed;
+            right: -350px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 320px;
+            background: white;
+            border-radius: 10px 0 0 10px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .info-panel.show {
+            right: 0;
+        }
+        
+        .close-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .interaction-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .step-number {
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .timeline-item {
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+        
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .command-box {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Architecture Système de Recommandation - P10</h1>
+            <span class="update-badge">Parcours AI Engineer - Openclassrooms - Juillet 2025</span>
+            <p>Arnaud CAILLE</p>
+        </div>
+        
+        <div class="architecture-tabs">
+            <button class="tab active" onclick="showArchitecture('current')">Architecture Production</button>
+            <button class="tab" onclick="showArchitecture('target')">Architecture Évolutive</button>
+            <button class="tab" onclick="showArchitecture('flow')">Flux de Données</button>
+            <button class="tab" onclick="showArchitecture('tests')">Tests & Résolutions</button>
+        </div>
+        
+        <div class="diagram-container">
+            <!-- Architecture Production -->
+            <div id="current-arch" class="architecture-view">
+                <div class="architecture-layer" style="animation-delay: 0.1s">
+                    <div class="layer-title">Interface Utilisateur Production</div>
+                    <div class="components-row">
+                        <div class="component production" onclick="showInfo('streamlit-prod')">
+                            <div class="component-title">Streamlit Cloud</div>
+                            <div class="component-desc">p10-app-recommendation-arnaud-caille<br>1028 utilisateurs validés<br>Interface responsive</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="component production" onclick="showInfo('hf-spaces')">
+                            <div class="component-title">HF Spaces</div>
+                            <div class="component-desc">Backup déployé<br>Secrets configurés<br>Auto-restart</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow"></div>
+                
+                <div class="architecture-layer" style="animation-delay: 0.3s">
+                    <div class="layer-title">API Layer Azure Functions</div>
+                    <div class="components-row">
+                        <div class="component azure" onclick="showInfo('function-app-prod')">
+                            <div class="component-title">p10recommandationfresh</div>
+                            <div class="component-desc">Python 3.11<br>Import robuste<br>Diagnostics intégrés</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="interaction-flow">
+                    <div class="step-number">1</div>
+                    <div class="arrow-horizontal"></div>
+                    <div class="component azure" onclick="showInfo('get-recommendations-prod')">
+                        <div class="component-title">get_recommendations</div>
+                        <div class="component-desc">Endpoint principal<br>Health check<br>Diagnostic mode</div>
+                    </div>
+                    <div class="arrow-horizontal"></div>
+                    <div class="step-number">2</div>
+                </div>
+                
+                <div class="arrow"></div>
+                
+                <div class="architecture-layer" style="animation-delay: 0.5s">
+                    <div class="layer-title">Storage et Modèles Optimisés</div>
+                    <div class="components-row">
+                        <div class="component data" onclick="showInfo('blob-storage-prod')">
+                            <div class="component-title">Azure Blob Storage</div>
+                            <div class="component-desc">p10fresh2025<br>artefacts-fresh<br>74.21 MB optimisé</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="component ml" onclick="showInfo('models-prod')">
+                            <div class="component-title">Modèles IA</div>
+                            <div class="component-desc">SVD + Content-Based<br>Hybrid configurable<br>Performance < 10s</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">100%</div>
+                        <div class="metric-label">Tests réussis (13/13)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">< 10s</div>
+                        <div class="metric-label">Temps de réponse</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">1028</div>
+                        <div class="metric-label">Utilisateurs valides</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">✅</div>
+                        <div class="metric-label">Système opérationnel</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Architecture Évolutive -->
+            <div id="target-arch" class="architecture-view hidden">
+                <div class="architecture-layer" style="animation-delay: 0.1s">
+                    <div class="layer-title">Interfaces Multi-Plateformes</div>
+                    <div class="components-row">
+                        <div class="component interface" onclick="showInfo('web-app')">
+                            <div class="component-title">Application Web</div>
+                            <div class="component-desc">React/Vue.js<br>Interface responsive<br>Authentification</div>
+                        </div>
+                        <div class="component interface" onclick="showInfo('mobile-app')">
+                            <div class="component-title">Application Mobile</div>
+                            <div class="component-desc">iOS/Android<br>Push notifications<br>Offline mode</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow"></div>
+                
+                <div class="architecture-layer" style="animation-delay: 0.3s">
+                    <div class="layer-title">API Gateway et Load Balancer</div>
+                    <div class="components-row">
+                        <div class="component azure" onclick="showInfo('api-gateway')">
+                            <div class="component-title">Azure API Management</div>
+                            <div class="component-desc">Routage intelligent<br>Authentification<br>Rate limiting</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow"></div>
+                
+                <div class="architecture-layer" style="animation-delay: 0.5s">
+                    <div class="layer-title">Microservices Spécialisés</div>
+                    <div class="components-row">
+                        <div class="component azure" onclick="showInfo('reco-service')">
+                            <div class="component-title">Service Recommandations</div>
+                            <div class="component-desc">Utilisateurs existants<br>Cold start<br>Modèle hybride</div>
+                        </div>
+                        <div class="component azure" onclick="showInfo('user-service')">
+                            <div class="component-title">Gestion Utilisateurs</div>
+                            <div class="component-desc">Nouveaux profils<br>Préférences<br>Historique</div>
+                        </div>
+                        <div class="component azure" onclick="showInfo('model-service')">
+                            <div class="component-title">ML Pipeline</div>
+                            <div class="component-desc">Réentraînement auto<br>A/B Testing<br>Monitoring ML</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow"></div>
+                
+                <div class="architecture-layer" style="animation-delay: 0.7s">
+                    <div class="layer-title">Données et Cache Distribué</div>
+                    <div class="components-row">
+                        <div class="component data" onclick="showInfo('cosmos-db')">
+                            <div class="component-title">CosmosDB</div>
+                            <div class="component-desc">Utilisateurs<br>Articles<br>Interactions temps réel</div>
+                        </div>
+                        <div class="component azure" onclick="showInfo('redis-cache')">
+                            <div class="component-title">Redis Cache</div>
+                            <div class="component-desc">Modèles en mémoire<br>Recommandations<br>Sessions utilisateur</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Flux de Données -->
+            <div id="flow-arch" class="architecture-view hidden">
+                <div class="architecture-layer" style="animation-delay: 0.1s">
+                    <div class="layer-title">Flux de Recommandation - Production</div>
+                    
+                    <div class="interaction-flow">
+                        <div class="step-number">1</div>
+                        <div class="component interface">
+                            <div class="component-title">Utilisateur</div>
+                            <div class="component-desc">Sélectionne user_id<br>Configure paramètres</div>
+                        </div>
+                        <div class="arrow-horizontal"></div>
+                        <div class="step-number">2</div>
+                        <div class="component production">
+                            <div class="component-title">Streamlit Cloud</div>
+                            <div class="component-desc">Validation input<br>Appel API Azure</div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow"></div>
+                    
+                    <div class="interaction-flow">
+                        <div class="step-number">3</div>
+                        <div class="component azure">
+                            <div class="component-title">Azure Function</div>
+                            <div class="component-desc">Import robuste<br>Chargement artefacts</div>
+                        </div>
+                        <div class="arrow-horizontal"></div>
+                        <div class="step-number">4</div>
+                        <div class="component data">
+                            <div class="component-title">Blob Storage</div>
+                            <div class="component-desc">Artefacts optimisés<br>74.21 MB total</div>
+                        </div>
+                    </div>
+                    
+                    <div class="arrow"></div>
+                    
+                    <div class="interaction-flow">
+                        <div class="step-number">5</div>
+                        <div class="component ml">
+                            <div class="component-title">Modèle SVD</div>
+                            <div class="component-desc">Collaborative Filtering<br>model_cf_light.pkl</div>
+                        </div>
+                        <div class="component ml">
+                            <div class="component-title">Content-Based</div>
+                            <div class="component-desc">Embeddings PCA 80D<br>Similarité cosinus</div>
+                        </div>
+                        <div class="step-number">6</div>
+                    </div>
+                    
+                    <div class="arrow"></div>
+                    
+                    <div class="interaction-flow">
+                        <div class="step-number">7</div>
+                        <div class="component ml">
+                            <div class="component-title">Hybridation</div>
+                            <div class="component-desc">Alpha weighting<br>Top-N selection<br>Score fusion</div>
+                        </div>
+                        <div class="arrow-horizontal"></div>
+                        <div class="step-number">8</div>
+                        <div class="component production">
+                            <div class="component-title">Résultat JSON</div>
+                            <div class="component-desc">5 articles recommandés<br>Métadonnées enrichies</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tests & Résolutions -->
+            <div id="tests-arch" class="architecture-view hidden">
+                <div class="architecture-layer" style="animation-delay: 0.1s">
+                    <div class="layer-title">Problèmes Résolus et Tests</div>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>✅ Erreurs d'import Python résolues</h4>
+                                <p><strong>Solution:</strong> Import robuste avec 3 méthodes de fallback</p>
+                                <div class="command-box">try: from . import loaders
+except: import sys; sys.path.append('src'); import loaders</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>✅ Timeout Azure Blob Storage résolu</h4>
+                                <p><strong>Solution:</strong> Artefacts allégés (380 MB → 74.21 MB)</p>
+                                <div class="command-box">model_cf_light.pkl (0.78 MB)
+articles_embeddings_compressed.npz (72.21 MB)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h4>✅ Nouveau Storage Account créé</h4>
+                                <p><strong>Solution:</strong> p10fresh2025 + reset infrastructure</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="architecture-layer" style="animation-delay: 0.3s">
+                    <div class="layer-title">Suite de Tests Validés</div>
+                    
+                    <div class="components-row">
+                        <div class="component tests" onclick="showInfo('unit-tests')">
+                            <div class="component-title">Tests Unitaires</div>
+                            <div class="component-desc">13/13 PASSED<br>run_tests.bat<br>Coverage complète</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="component tests" onclick="showInfo('performance-tests')">
+                            <div class="component-title">Tests Performance</div>
+                            <div class="component-desc">< 10s par recommandation<br>Charge multiple users<br>Seuils validés</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="component tests" onclick="showInfo('azure-validation')">
+                            <div class="component-title">Validation Azure</div>
+                            <div class="component-desc">run_all.bat<br>Connectivité cloud<br>Intégrité artefacts</div>
+                            <div class="status-indicator"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="command-box">
+# Tests et validation
+Dossier: P10/2-python/
+Venv: venv_p10 (auto-activé)
+
+run_tests.bat     # Tests rapides (30s)
+run_all.bat       # Validation complète (3min)
+pytest -v         # Mode manuel
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-panel" id="info-panel">
+        <button class="close-panel" onclick="closeInfo()">×</button>
+        <div id="info-content">
+            <h3>Sélectionnez un composant</h3>
+            <p>Cliquez sur un élément du diagramme pour voir ses détails et spécifications.</p>
+        </div>
+    </div>
+
+    <script>
+        function showArchitecture(type) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Hide all architecture views
+            document.querySelectorAll('.architecture-view').forEach(view => view.classList.add('hidden'));
+            
+            // Show selected architecture
+            document.getElementById(type + '-arch').classList.remove('hidden');
+        }
+        
+        function showInfo(component) {
+            const infoPanel = document.getElementById('info-panel');
+            const infoContent = document.getElementById('info-content');
+            
+            const componentInfo = {
+                'streamlit-prod': {
+                    title: 'Streamlit Cloud Production',
+                    details: `
+                        <h4>Interface utilisateur déployée</h4>
+                        <p><strong>URL:</strong> p10-app-recommendation-arnaud-caille.streamlit.app</p>
+                        <p><strong>Fonctionnalités opérationnelles:</strong></p>
+                        <ul>
+                            <li>1028 utilisateurs valides chargés depuis Azure</li>
+                            <li>Interface responsive avec sélection user_id</li>
+                            <li>Configuration paramètres (alpha, top_n, mode)</li>
+                            <li>Affichage recommandations + métadonnées</li>
+                            <li>Historique utilisateur simulé</li>
+                            <li>Demo live intégrée</li>
+                        </ul>
+                        <p><strong>Performance:</strong> Chargement < 3s, appels API optimisés</p>
+                        <p><strong>Statut:</strong> ✅ Opérationnel pour soutenance</p>
+                    `
+                },
+                'function-app-prod': {
+                    title: 'Azure Function Production',
+                    details: `
+                        <h4>p10recommandationfresh - Function App</h4>
+                        <p><strong>Configuration finale:</strong></p>
+                        <ul>
+                            <li>Runtime: Python 3.11 validé</li>
+                            <li>Plan: Consumption (serverless)</li>
+                            <li>Région: France Central</li>
+                            <li>Timeout: 10 minutes configuré</li>
+                            <li>Resource Group: P10FreshResourceGroup</li>
+                        </ul>
+                        <p><strong>Résolutions implémentées:</strong></p>
+                        <ul>
+                            <li>✅ Import robuste avec 3 méthodes de fallback</li>
+                            <li>✅ Diagnostic intégré (?diagnostic=true)</li>
+                            <li>✅ Health check endpoint</li>
+                            <li>✅ Gestion d'erreurs améliorée</li>
+                            <li>✅ Logs structurés Application Insights</li>
+                        </ul>
+                        <p><strong>Statut:</strong> ✅ Opérationnel, tous tests validés</p>
+                    `
+                },
+                'blob-storage-prod': {
+                    title: 'Azure Blob Storage Optimisé',
+                    details: `
+                        <h4>p10fresh2025 - Storage Account</h4>
+                        <p><strong>Container:</strong> artefacts-fresh</p>
+                        <p><strong>Artefacts optimisés (74.21 MB total):</strong></p>
+                        <ul>
+                            <li>model_cf_light.pkl (0.78 MB) - SVD allégé réentraîné</li>
+                            <li>df_light.parquet (0.30 MB) - 5000 utilisateurs</li>
+                            <li>df_articles_light.parquet (1.07 MB) - 2000 articles</li>
+                            <li>articles_embeddings_compressed.npz (72.21 MB) - PCA 80D</li>
+                            <li>user_ids_valid.json (0.01 MB) - IDs validés Streamlit</li>
+                        </ul>
+                        <p><strong>Optimisations réussies:</strong></p>
+                        <ul>
+                            <li>✅ Compression PCA (355 MB → 72 MB)</li>
+                            <li>✅ Sous-échantillonnage intelligent</li>
+                            <li>✅ Chargement < 10s garanti</li>
+                            <li>✅ Cache BlobServiceClient</li>
+                        </ul>
+                    `
+                },
+                'models-prod': {
+                    title: 'Modèles IA Production',
+                    details: `
+                        <h4>Système de Recommandation Hybride Opérationnel</h4>
+                        <p><strong>Modèle 1 - Collaborative Filtering:</strong></p>
+                        <ul>
+                            <li>Algorithme: SVD (Surprise) optimisé</li>
+                            <li>Fichier: model_cf_light.pkl (0.78 MB)</li>
+                            <li>Données: 5000 utilisateurs, interactions validées</li>
+                            <li>Avantage: Découverte de patterns cachés</li>
+                        </ul>
+                        <p><strong>Modèle 2 - Content-Based:</strong></p>
+                        <ul>
+                            <li>Méthode: Similarité cosinus sur embeddings</li>
+                            <li>Compression: PCA à 80 dimensions</li>
+                            <li>Fichier: articles_embeddings_compressed.npz</li>
+                            <li>Avantage: Pas de cold start, explicabilité</li>
+                        </ul>
+                        <p><strong>Hybridation:</strong></p>
+                        <p>Score_final = alpha × CF_score + (1-alpha) × Content_score</p>
+                        <p><strong>Performance validée:</strong> < 10s par recommandation</p>
+                    `
+                },
+                'unit-tests': {
+                    title: 'Tests Unitaires Complets',
+                    details: `
+                        <h4>Suite de 13 tests automatisés - 100% réussite</h4>
+                        <p><strong>Détail des tests par catégorie:</strong></p>
+                        <ul>
+                            <li><strong>8 tests loaders:</strong> Chargement local/azure des données et modèles</li>
+                            <li><strong>1 test configuration:</strong> Détection automatique chemins projet</li>
+                            <li><strong>1 test wrappers:</strong> Interface principale get_recommendations</li>
+                            <li><strong>2 tests performance:</strong> Temps réponse et charge multiple users</li>
+                            <li><strong>1 test métier:</strong> Cohérence logique des recommandations</li>
+                        </ul>
+                        <p><strong>Scripts de lancement:</strong></p>
+                        <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 5px; font-family: monospace;">
+                        run_tests.bat     # Tests rapides (30s)<br>
+                        run_all.bat       # Validation complète (3min)<br>
+                        pytest -v         # Mode manuel détaillé
+                        </div>
+                        <p><strong>Résultats:</strong> 13/13 PASSED, aucun échec, système robuste</p>
+                    `
+                },
+                'performance-tests': {
+                    title: 'Tests de Performance Validés',
+                    details: `
+                        <h4>Validation des seuils de performance</h4>
+                        <p><strong>Métriques testées:</strong></p>
+                        <ul>
+                            <li><strong>Temps de réponse individuel:</strong> < 10 secondes (validé)</li>
+                            <li><strong>Test de charge:</strong> 5 utilisateurs simultanés (validé)</li>
+                            <li><strong>Chargement artefacts:</strong> < 8 secondes depuis Azure Blob</li>
+                            <li><strong>Mémoire function:</strong> < 1.5 GB (limite Azure respectée)</li>
+                        </ul>
+                        <p><strong>Optimisations appliquées:</strong></p>
+                        <ul>
+                            <li>✅ Artefacts allégés (74.21 MB vs 380+ MB initial)</li>
+                            <li>✅ Lazy loading des modèles</li>
+                            <li>✅ Cache intelligent BlobServiceClient</li>
+                            <li>✅ Timeout function étendu à 10 minutes</li>
+                        </ul>
+                        <p><strong>Validation production:</strong> Tous seuils respectés</p>
+                    `
+                },
+                'hf-spaces': {
+                    title: 'Hugging Face Spaces - Déploiement Backup',
+                    details: `
+                        <h4>Plateforme de déploiement alternative</h4>
+                        <p><strong>URL:</strong> huggingface.co/spaces/arnaud66170/p10-recommendation-system</p>
+                        <p><strong>Configuration:</strong></p>
+                        <ul>
+                            <li>Runtime: Streamlit sur infrastructure HF</li>
+                            <li>Secrets: Variables Azure configurées</li>
+                            <li>Auto-restart: Activé après modification secrets</li>
+                            <li>Git sync: Automatique depuis repository</li>
+                        </ul>
+                        <p><strong>Avantages:</strong></p>
+                        <ul>
+                            <li>Déploiement instantané</li>
+                            <li>Backup si problème Streamlit Cloud</li>
+                            <li>Intégration Git native</li>
+                            <li>Interface identique à la production</li>
+                        </ul>
+                        <p><strong>Statut:</strong> ✅ Opérationnel, secrets validés</p>
+                    `
+                },
+                'get-recommendations-prod': {
+                    title: 'Endpoint get_recommendations - Production',
+                    details: `
+                        <h4>API principale du système</h4>
+                        <p><strong>URL:</strong> p10recommandationfresh.azurewebsites.net/api/get_recommendations</p>
+                        <p><strong>Méthodes supportées:</strong></p>
+                        <ul>
+                            <li><strong>GET/POST:</strong> Recommandations standard</li>
+                            <li><strong>?diagnostic=true:</strong> État système complet</li>
+                            <li><strong>?health=check:</strong> Vérification santé</li>
+                        </ul>
+                        <p><strong>Paramètres validés:</strong></p>
+                        <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 5px; font-family: monospace;">
+                        {<br>
+                        &nbsp;&nbsp;"user_id": 8,<br>
+                        &nbsp;&nbsp;"top_n": 5,<br>
+                        &nbsp;&nbsp;"mode": "auto|cf|cbf|hybrid",<br>
+                        &nbsp;&nbsp;"alpha": 0.5<br>
+                        }
+                        </div>
+                        <p><strong>Réponse type:</strong> 5 article_ids + métadonnées JSON</p>
+                        <p><strong>Résolutions appliquées:</strong> Import robuste, gestion erreurs, monitoring</p>
+                    `
+                },
+                'azure-validation': {
+                    title: 'Validation Azure Complète',
+                    details: `
+                        <h4>Tests d'intégration cloud réussis</h4>
+                        <p><strong>Script run_all.bat - Validation 360°:</strong></p>
+                        <ul>
+                            <li>✅ Tests unitaires (13/13 PASSED)</li>
+                            <li>✅ Connectivité Azure Blob Storage</li>
+                            <li>✅ Intégrité des 5 artefacts (74.21 MB)</li>
+                            <li>✅ API Azure Function opérationnelle</li>
+                            <li>✅ Temps de réponse < seuils définis</li>
+                        </ul>
+                        <p><strong>Infrastructure validée:</strong></p>
+                        <ul>
+                            <li><strong>Resource Group:</strong> P10FreshResourceGroup</li>
+                            <li><strong>Function App:</strong> p10recommandationfresh</li>
+                            <li><strong>Storage Account:</strong> p10fresh2025</li>
+                            <li><strong>Container:</strong> artefacts-fresh</li>
+                        </ul>
+                        <p><strong>Commande de validation:</strong></p>
+                        <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 5px; font-family: monospace;">
+                        run_all.bat  # Validation complète (3 minutes)
+                        </div>
+                    `
+                },
+                'web-app': {
+                    title: 'Application Web Future',
+                    details: `
+                        <h4>Interface web évolutive prévue</h4>
+                        <p><strong>Technologies envisagées:</strong></p>
+                        <ul>
+                            <li>Frontend: React.js ou Vue.js</li>
+                            <li>Authentification: Azure AD B2C</li>
+                            <li>State management: Redux/Vuex</li>
+                            <li>UI Framework: Material-UI ou Vuetify</li>
+                        </ul>
+                        <p><strong>Fonctionnalités prévues:</strong></p>
+                        <ul>
+                            <li>Profils utilisateur personnalisés</li>
+                            <li>Historique de recommandations</li>
+                            <li>Feedback sur recommandations</li>
+                            <li>Interface d'administration</li>
+                        </ul>
+                        <p><strong>Architecture:</strong> SPA connectée à l'API Azure existante</p>
+                    `
+                },
+                'api-gateway': {
+                    title: 'Azure API Management',
+                    details: `
+                        <h4>Couche d'orchestration future</h4>
+                        <p><strong>Fonctionnalités prévues:</strong></p>
+                        <ul>
+                            <li>Routage intelligent vers microservices</li>
+                            <li>Rate limiting par utilisateur</li>
+                            <li>Authentification centralisée</li>
+                            <li>Monitoring et analytics</li>
+                            <li>Versioning API</li>
+                        </ul>
+                        <p><strong>Intégration:</strong></p>
+                        <ul>
+                            <li>Azure Functions existantes</li>
+                            <li>Nouveaux microservices</li>
+                            <li>Cache Redis pour performances</li>
+                        </ul>
+                    `
+                },
+                'reco-service': {
+                    title: 'Service Recommandations Évolué',
+                    details: `
+                        <h4>Microservice spécialisé futur</h4>
+                        <p><strong>Évolutions prévues:</strong></p>
+                        <ul>
+                            <li>Gestion cold start automatique</li>
+                            <li>Algorithmes multiples en parallèle</li>
+                            <li>A/B testing intégré</li>
+                            <li>Machine learning en temps réel</li>
+                        </ul>
+                        <p><strong>Architecture:</strong></p>
+                        <ul>
+                            <li>Base: Azure Function actuelle</li>
+                            <li>Extension: Container Apps pour scaling</li>
+                            <li>Cache: Redis pour recommandations fréquentes</li>
+                        </ul>
+                    `
+                },
+                'cosmos-db': {
+                    title: 'CosmosDB - Base de Données Future',
+                    details: `
+                        <h4>Stockage NoSQL pour évolutivité</h4>
+                        <p><strong>Collections prévues:</strong></p>
+                        <ul>
+                            <li><strong>users:</strong> Profils utilisateur complets</li>
+                            <li><strong>articles:</strong> Métadonnées enrichies</li>
+                            <li><strong>interactions:</strong> Clics temps réel</li>
+                            <li><strong>recommendations:</strong> Cache des recommandations</li>
+                        </ul>
+                        <p><strong>Avantages:</strong></p>
+                        <ul>
+                            <li>Scaling global automatique</li>
+                            <li>Latence < 10ms</li>
+                            <li>Multi-API (SQL, MongoDB, etc.)</li>
+                            <li>Intégration Azure native</li>
+                        </ul>
+                    `
+                }
+            };
+            
+            if (componentInfo[component]) {
+                infoContent.innerHTML = `
+                    <h3>${componentInfo[component].title}</h3>
+                    ${componentInfo[component].details}
+                `;
+                infoPanel.classList.add('show');
+            }
+        }
+        
+        function closeInfo() {
+            document.getElementById('info-panel').classList.remove('show');
+        }
+        
+        // Animation des flèches
+        setInterval(() => {
+            document.querySelectorAll('.arrow').forEach(arrow => {
+                arrow.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    arrow.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }, 3000);
+    </script>
+</body>
+</html>

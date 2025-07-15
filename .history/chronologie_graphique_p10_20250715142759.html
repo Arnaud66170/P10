@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronologie Projet P10 MyContent</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .objective {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 40px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #3498db, #9b59b6);
+        }
+        
+        .phase {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 80px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .phase:hover {
+            transform: translateX(10px);
+        }
+        
+        .phase-number {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .phase:hover .phase-number {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .phase-content {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .phase:hover .phase-content {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .phase-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .phase-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid #3498db;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .detail-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .detail-content {
+            color: #5a6c7d;
+            line-height: 1.6;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .tech-item {
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tech-item:hover {
+            transform: scale(1.05);
+            background: #e74c3c;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .problem-solution {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .problem-solution:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .problem {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .solution {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .architecture {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .architecture h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .arch-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .arch-box {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .arch-box:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .arrow {
+            font-size: 1.5em;
+            color: #ecf0f1;
+        }
+        
+        .results {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+        
+        .results h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .result-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .result-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .result-value {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        
+        .metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .metric:hover {
+            transform: scale(1.1);
+        }
+        
+        .metric-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #f39c12;
+        }
+        
+        .metric:hover .metric-number {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, #3498db, #e74c3c);
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+        
+        .floating-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border-radius: 25px;
+            padding: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #bdc3c7;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-dot.active {
+            background: #3498db;
+            transform: scale(1.3);
+        }
+        
+        .nav-dot:hover {
+            background: #e74c3c;
+            transform: scale(1.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: modalShow 0.3s ease;
+        }
+        
+        @keyframes modalShow {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #e74c3c;
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .tooltip {
+            position: fixed;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            max-width: 300px;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .tooltip.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="floating-nav" id="floatingNav">
+        <div class="nav-dot active" onclick="scrollToPhase(0)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(1)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(2)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(3)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(4)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(5)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(6)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(7)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(8)"></div>
+        <div class="nav-dot" onclick="scrollToPhase(9)"></div>
+    </div>
+    
+    <div class="modal" id="phaseModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <div class="container">
+        <div class="header animate-on-scroll">
+            <h1>P10 - MyContent - Arnaud CAILLE</h1>
+            <h2>Parcours AI Engineer - OpenClassrooms</h2>
+            <div class="subtitle">Système de recommandation d'articles</div>
+        </div>
+        
+        <div class="objective animate-on-scroll pulse">
+            <h2>Objectif : Développer un MVP de recommandation d'articles</h2>
+            <p>Mission : passer de l'exploration des données au déploiement en production cloud</p>
+            <p><strong>Cible : 5 articles personnalisés par utilisateur</strong></p>
+        </div>
+        
+        <div class="timeline">
+            <div class="phase animate-on-scroll" onclick="openModal(1)">
+                <div class="phase-number">1</div>
+                <div class="phase-content">
+                    <div class="phase-title">Initialisation et Cadrage</div>
+                    <div class="phase-details">
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Actions réalisées : Analyse complète des consignes du projet, définition des objectifs et création de l\'architecture modulaire.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Actions</div>
+                            <div class="detail-content">Analyse des consignes, création de l'architecture du projet</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Dataset fourni : articles_metadata.csv (364k articles), clicks_sample.csv, 385 fichiers temporels représentant les interactions utilisateurs.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Données</div>
+                            <div class="detail-content">"articles_metadata.csv", "clicks_sample.csv", 385 fichiers "clicks_hour_*.csv"</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Environnement de développement : Configuration de l\'environnement virtuel Python venv_p10 avec toutes les dépendances nécessaires.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Environnement</div>
+                            <div class="detail-content">Configuration venv_p10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(2)">
+                <div class="phase-number">2</div>
+                <div class="phase-content">
+                    <div class="phase-title">Préparation des Données</div>
+                    <div class="phase-details">
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Notebook principal de préparation des données avec pipeline complet de nettoyage, fusion et validation.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Notebook</div>
+                            <div class="detail-content">01_data_preparation.ipynb</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Volume de données traité : >300k interactions utilisateurs, >322k utilisateurs uniques, >364k articles avec métadonnées complètes.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Volume</div>
+                            <div class="detail-content"> >300k interactions, >322k utilisateurs, >364k articles</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Réduction drastique de la taille des embeddings par PCA de 355 MB à 72 MB tout en conservant 95% de la variance avec seulement 52 composantes.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Optimisation</div>
+                            <div class="detail-content">Compression embeddings PCA (355 MB → 72 MB, 95% variance - 52 composantes)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(3)">
+                <div class="phase-number">3</div>
+                <div class="phase-content">
+                    <div class="phase-title">Modélisation IA</div>
+                    <div class="phase-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Approches</div>
+                            <div class="detail-content">
+                                <div class="tech-stack">
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Content-Based Filtering : Recommandation basée sur la similarité des embeddings d\'articles')" onmouseout="hideTooltip()">Content-Based Filtering</span>
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Collaborative Filtering : Recommandation basée sur les comportements similaires des utilisateurs')" onmouseout="hideTooltip()">Collaborative Filtering</span>
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Modèle Hybride : Combinaison pondérée des deux approches avec paramètre alpha ajustable')" onmouseout="hideTooltip()">Modèle Hybride</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Technologies</div>
+                            <div class="detail-content">
+                                <div class="tech-stack">
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'SVD Surprise : Bibliothèque spécialisée pour la factorisation matricielle en systèmes de recommandation')" onmouseout="hideTooltip()">SVD Surprise</span>
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Embeddings : Représentations vectorielles des articles pré-calculées pour la similarité sémantique')" onmouseout="hideTooltip()">Embeddings</span>
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Scikit-learn : Machine learning pour PCA, métriques et preprocessing')" onmouseout="hideTooltip()">Scikit-learn</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(4)">
+                <div class="phase-number">4</div>
+                <div class="phase-content">
+                    <div class="phase-title">Optimisation pour Production</div>
+                    <div class="phase-details">
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Contrainte majeure : Les modèles de plus de 380 MB causaient des timeouts lors du chargement sur Azure Functions.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Problématique</div>
+                            <div class="detail-content">Modèles trop volumineux (>380 MB) causant, entre autres, des <b>timeouts</b> Azure</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Solutions implémentées : Sous-échantillonnage intelligent des données, compression avancée et génération d\'artefacts optimisés.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Solutions</div>
+                            <div class="detail-content">Artefacts légers, sous-échantillonnage intelligent, compression .npz</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(5)">
+                <div class="phase-number">5</div>
+                <div class="phase-content">
+                    <div class="phase-title">Infrastructure Azure</div>
+                    <div class="phase-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Composants</div>
+                            <div class="detail-content">
+                                <div class="tech-stack">
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Azure Function App : Plateforme serverless pour l\'API de recommandation')" onmouseout="hideTooltip()">Azure Function App</span>
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Azure Blob Storage : Stockage cloud pour les artefacts ML et données')" onmouseout="hideTooltip()">Azure Blob Storage</span>
+                                    <span class="tech-item" onmouseover="showTooltip(event, 'Resource Group : Conteneur logique pour organiser toutes les ressources Azure')" onmouseout="hideTooltip()">Resource Group</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(6)">
+                <div class="phase-number">6</div>
+                <div class="phase-content">
+                    <div class="phase-title">Développement Backend</div>
+                    <div class="phase-details">
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Backend robuste avec API REST, chargement dynamique des modèles et gestion complète des erreurs.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Fonctionnalités</div>
+                            <div class="detail-content">API REST serverless, moteur hybride, gestion d'erreurs robuste</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(7)">
+                <div class="phase-number">7</div>
+                <div class="phase-content">
+                    <div class="phase-title">Résolution Problèmes Critiques</div>
+                    <div class="phase-details">
+                        <div class="problem-solution" onmouseover="showTooltip(event, 'Problème critique : Les imports Python échouaient silencieusement dans l\'environnement Azure Functions, causant des erreurs NameError.')" onmouseout="hideTooltip()">
+                            <div class="problem">Problème : Erreurs d'import Python silencieuses</div>
+                            <div class="solution">Solution : Import robuste avec 3 méthodes de fallback</div>
+                        </div>
+                        <div class="problem-solution" onmouseover="showTooltip(event, 'Problème de configuration : Incohérence dans les noms des conteneurs Azure Blob Storage causant des erreurs ContainerNotFound.')" onmouseout="hideTooltip()">
+                            <div class="problem">Problème : Mauvais conteneur Azure</div>
+                            <div class="solution">Solution : Harmonisation sur \"artefacts-fresh\"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(8)">
+                <div class="phase-number">8</div>
+                <div class="phase-content">
+                    <div class="phase-title">Interface Utilisateur</div>
+                    <div class="phase-details">
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Framework Streamlit choisi pour sa rapidité de développement et ses capacités de visualisation.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Technologie</div>
+                            <div class="detail-content">Streamlit</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Interface complète avec sélection d\'utilisateur, paramètres configurables et historique des interactions.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Fonctionnalités</div>
+                            <div class="detail-content">Sélection utilisateur, paramètres configurables, historique</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(9)">
+                <div class="phase-number">9</div>
+                <div class="phase-content">
+                    <div class="phase-title">Déploiement Production</div>
+                    <div class="phase-details">
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Pivot stratégique nécessaire à cause des limitations de quota Azure, migration réussie vers Streamlit Community Cloud.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Évolution</div>
+                            <div class="detail-content">Azure App Service → Streamlit Community Cloud</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Optimisation drastique des dépendances pour réduire les temps de déploiement et la taille de l\'application.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Optimisation</div>
+                            <div class="detail-content">Requirements.txt (80+ → 7 dépendances)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animate-on-scroll" onclick="openModal(10)">
+                <div class="phase-number">10</div>
+                <div class="phase-content">
+                    <div class="phase-title">Tests et Validation</div>
+                    <div class="phase-details">
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Performance mesurée : Temps de réponse moyen de 1,600ms pour générer 5 recommandations personnalisées.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Performance</div>
+                            <div class="detail-content">Temps de réponse ~1,600ms</div>
+                        </div>
+                        <div class="detail-item" onmouseover="showTooltip(event, 'Capacité du système : Support de 1,028 utilisateurs uniques et 2,498 articles avec métadonnées complètes.')" onmouseout="hideTooltip()">
+                            <div class="detail-label">Capacité</div>
+                            <div class="detail-content">1,028 utilisateurs, 2,498 articles</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="architecture animate-on-scroll">
+            <h2>Architecture Finale</h2>
+            <div class="arch-flow">
+                <div class="arch-box" onmouseover="showTooltip(event, 'Point d\'entrée : L\'utilisateur accède à l\'interface web via son navigateur.')" onmouseout="hideTooltip()">Utilisateur</div>
+                <div class="arrow">→</div>
+                <div class="arch-box" onmouseover="showTooltip(event, 'Interface web : Application Streamlit déployée sur Streamlit Community Cloud.')" onmouseout="hideTooltip()">Streamlit Cloud</div>
+                <div class="arrow">→</div>
+                <div class="arch-box" onmouseover="showTooltip(event, 'API Backend : Azure Function serverless qui traite les requêtes de recommandation.')" onmouseout="hideTooltip()">Azure Function</div>
+                <div class="arrow">→</div>
+                <div class="arch-box" onmouseover="showTooltip(event, 'Stockage : Azure Blob Storage contenant tous les artefacts ML et données.')" onmouseout="hideTooltip()">Azure Blob Storage</div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <div class="arrow">↓</div>
+                <div class="arch-box" onmouseover="showTooltip(event, 'Intelligence : Modèles de ML (CBF, CF, Hybride) et données utilisateurs/articles.')" onmouseout="hideTooltip()">Modèles IA + Données</div>
+            </div>
+        </div>
+        
+        <div class="results animate-on-scroll">
+            <h2>Résultats Concrets</h2>
+            <div class="results-grid">
+                <div class="result-item" onmouseover="showTooltip(event, 'Interface utilisateur accessible 24/7 sur Streamlit Community Cloud.')" onmouseout="hideTooltip()">
+                    <div class="result-label">Interface</div>
+                    <div class="result-value">Streamlit App</div>
+                </div>
+                <div class="result-item" onmouseover="showTooltip(event, 'API REST serverless déployée sur Azure Functions avec haute disponibilité.')" onmouseout="hideTooltip()">
+                    <div class="result-label">API</div>
+                    <div class="result-value">Azure Function</div>
+                </div>
+                <div class="result-item" onmouseover="showTooltip(event, 'Coût total mensuel inférieur à 5 centimes grâce à l\'optimisation cloud.')" onmouseout="hideTooltip()">
+                    <div class="result-label">Coût</div>
+                    <div class="result-value">< 0.05€/mois</div>
+                </div>
+                <div class="result-item" onmouseover="showTooltip(event, 'Trois algorithmes de recommandation disponibles selon le profil utilisateur.')" onmouseout="hideTooltip()">
+                    <div class="result-label">Algorithmes</div>
+                    <div class="result-value">CBF + CF + Hybride</div>
+                </div>
+            </div>
+            
+            <div class="metrics">
+                <div class="metric" onmouseover="showTooltip(event, 'Nombre d\'utilisateurs uniques supportés par le système.')" onmouseout="hideTooltip()">
+                    <div class="metric-number">1,028</div>
+                    <div class="metric-label">Utilisateurs</div>
+                </div>
+                <div class="metric" onmouseover="showTooltip(event, 'Nombre d\'articles disponibles avec métadonnées complètes.')" onmouseout="hideTooltip()">
+                    <div class="metric-number">2,498</div>
+                    <div class="metric-label">Articles</div>
+                </div>
+                <div class="metric" onmouseover="showTooltip(event, 'Disponibilité continue du système grâce à l\'infrastructure cloud.')" onmouseout="hideTooltip()">
+                    <div class="metric-number">24/7</div>
+                    <div class="metric-label">Disponibilité</div>
+                </div>
+                <div class="metric" onmouseover="showTooltip(event, 'Nombre d\'algorithmes de recommandation implémentés.')" onmouseout="hideTooltip()">
+                    <div class="metric-number">3</div>
+                    <div class="metric-label">Algorithmes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Détails des phases pour le modal
+        const phaseDetails = {
+            1: {
+                title: "Initialisation et Cadrage",
+                content: "Cette phase cruciale a établi les fondations du projet. J'ai analysé en détail les consignes, défini l'architecture modulaire (notebooks/, src/, azure/, streamlit_app/) et configuré l'environnement de développement. Le dataset fourni comprenait 364,000 articles avec métadonnées, des échantillons d'interactions et 385 fichiers temporels représentant les clics utilisateurs."
+            },
+            2: {
+                title: "Préparation des Données",
+                content: "Phase intensive de data engineering avec nettoyage et fusion de données massives. J'ai traité pls de 300k interactions, 322k utilisateurs et 364k articles. L'optimisation majeure fut la compression des embeddings via PCA, passant de 355 MB à 72 MB tout en conservant 95% de la variance (52 composantes)."
+            },
+            3: {
+                title: "Modélisation IA",
+                content: "Développement de trois approches complémentaires : Content-Based Filtering utilisant la similarité des embeddings, Collaborative Filtering avec factorisation matricielle SVD, et un modèle hybride combinant les deux avec un paramètre alpha ajustable. Stack technique : Surprise, Scikit-learn, embeddings vectoriels."
+            },
+            4: {
+                title: "Optimisation pour Production",
+                content: "Résolution du problème critique des modèles trop volumineux (>380 MB) causant des timeouts Azure. J'ai créé des artefacts légers via sous-échantillonnage intelligent, compression .npz et génération de versions optimisées pour le cloud."
+            },
+            5: {
+                title: "Infrastructure Azure",
+                content: "Déploiement de l'infrastructure cloud complète : Azure Function App pour l'API serverless, Azure Blob Storage pour les artefacts ML, et Resource Group pour l'organisation. Configuration de la sécurité et des accès."
+            },
+            6: {
+                title: "Développement Backend",
+                content: "Création de l'API REST serverless avec chargement dynamique des modèles depuis Azure Blob, moteur de recommandation hybride, paramètres configurables et gestion d'erreurs robuste. Architecture modulaire pour faciliter la maintenance."
+            },
+            7: {
+                title: "Résolution Problèmes Critiques",
+                content: "Débogage intensif de problèmes majeurs : imports Python silencieux dans Azure Functions (résolu par fallback multiple), paramètres manquants (chargement complet des artefacts), et incohérence des noms de conteneurs (standardisation sur 'artefacts-fresh')."
+            },
+            8: {
+                title: "Interface Utilisateur",
+                content: "Développement avec Streamlit d'une interface intuitive incluant sélection d'utilisateur parmi 1,028 profils, paramètres de recommandation configurables, intégration API Azure Function, affichage élégant des résultats et historique des interactions."
+            },
+            9: {
+                title: "Déploiement Production",
+                content: "Pivot stratégique nécessaire : échec du déploiement sur Azure App Service à cause des quotas, migration réussie vers Streamlit Community Cloud. Optimisation drastique des dépendances (80+ → 7) et création du repository GitHub pour déploiement automatique."
+            },
+            10: {
+                title: "Tests et Validation",
+                content: "Validation complète avec tests de diagnostic système, performance (1,600ms de temps de réponse), capacité (1,028 utilisateurs, 2,498 articles) et disponibilité 24/7. Validation de l'architecture finale et des trois algorithmes de recommandation."
+            }
+        };
+        
+        // Gestion du scroll et de la barre de progression
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset;
+            const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercentage = (scrollTop / documentHeight) * 100;
+            
+            document.getElementById('progressBar').style.width = scrollPercentage + '%';
+            
+            // Animation des éléments au scroll
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            elements.forEach(element => {
+                const elementTop = element.offsetTop;
+                const elementHeight = element.offsetHeight;
+                const viewportHeight = window.innerHeight;
+                
+                if (scrollTop + viewportHeight > elementTop + elementHeight / 4) {
+                    element.classList.add('visible');
+                }
+            });
+            
+            // Mise à jour navigation flottante
+            updateFloatingNav();
+        });
+        
+        // Mise à jour de la navigation flottante
+        function updateFloatingNav() {
+            const phases = document.querySelectorAll('.phase');
+            const navDots = document.querySelectorAll('.nav-dot');
+            const scrollTop = window.pageYOffset;
+            
+            let activePhase = 0;
+            phases.forEach((phase, index) => {
+                const phaseTop = phase.offsetTop;
+                const phaseHeight = phase.offsetHeight;
+                
+                if (scrollTop >= phaseTop - 200 && scrollTop < phaseTop + phaseHeight - 200) {
+                    activePhase = index;
+                }
+            });
+            
+            navDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === activePhase);
+            });
+        }
+        
+        // Fonction pour faire défiler vers une phase
+        function scrollToPhase(phaseIndex) {
+            const phases = document.querySelectorAll('.phase');
+            if (phases[phaseIndex]) {
+                phases[phaseIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // Gestion des modales
+        function openModal(phaseNumber) {
+            const modal = document.getElementById('phaseModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            
+            if (phaseDetails[phaseNumber]) {
+                modalTitle.textContent = phaseDetails[phaseNumber].title;
+                modalContent.innerHTML = '<p>' + phaseDetails[phaseNumber].content + '</p>';
+                modal.style.display = 'block';
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('phaseModal').style.display = 'none';
+        }
+        
+        // Fermer modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const modal = document.getElementById('phaseModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        // Gestion des tooltips
+        function showTooltip(event, text) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = text;
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY + 10 + 'px';
+            tooltip.classList.add('show');
+        }
+        
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation initiale
+            setTimeout(() => {
+                document.querySelectorAll('.animate-on-scroll').forEach(element => {
+                    const elementTop = element.offsetTop;
+                    const viewportHeight = window.innerHeight;
+                    
+                    if (elementTop < viewportHeight) {
+                        element.classList.add('visible');
+                    }
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
